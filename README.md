@@ -7,6 +7,8 @@ A *WordPress* plugin which provides an ICS feed for the *Event Organiser* plugin
 
 ### Notes ###
 
+This solves a [known issue with Event Organiser iCal feeds](https://github.com/stephenharris/Event-Organiser/issues/356).
+
 #### Requirements ####
 
 This plugin requires:

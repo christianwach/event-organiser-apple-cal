@@ -16,6 +16,8 @@ Provides an ICS feed for the Event Organiser plugin that can be read by Apple Ca
 
 A WordPress plugin which provides an ICS feed for the Event Organiser plugin that can be read by Apple Calendar.
 
+This plugin solves a [known issue with Event Organiser iCal feeds](https://github.com/stephenharris/Event-Organiser/issues/356).
+
 ### Requirements
 
 This plugin requires:
