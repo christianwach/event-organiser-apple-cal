@@ -59,4 +59,4 @@ If you get a 404 Not Found error when visiting the feed, then go to your WordPre
 
 == Changelog ==
 
-See https://github.com/christianwach/event-organiser-apple/commits/master
+See https://github.com/christianwach/event-organiser-apple-cal/commits/master
