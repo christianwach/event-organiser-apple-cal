@@ -1,12 +1,14 @@
 <?php
-
 /**
  * ICS Feed for Apple Calendar.
  *
  * This is a modified clone of Event Organiser's 'ical.php' template file.
  *
- * @since 0.1
+ * @package Event_Organiser_Apple_Cal
  */
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 echo "BEGIN:VCALENDAR\r\n";
 echo "VERSION:2.0\r\n";
@@ -18,34 +20,36 @@ if ( ! is_single() ) {
 echo 'X-ORIGINAL-URL:' . get_post_type_archive_link( 'event' ) . "\r\n";
 echo 'X-WR-CALDESC:' . get_bloginfo( 'name' ) . " - Events\r\n";
 
-// Loop through events
+// Loop through events.
 if ( have_posts() ) :
 
 	$now     = new DateTime();
 	$dtstamp = eo_format_date( 'now', 'Ymd\THis\Z' );
 
-	// Set $tz if a timezone is specified - this does not include GMT offsets
+	// Set $tz if a timezone is specified - this does not include GMT offsets.
 	$timezone     = ( get_option( 'timezone_string' ) ? eo_get_blog_timezone() : false );
 	$utc_timezone = new DateTimeZone( 'UTC' );
 
 	$earliest_date = false;
 	$latest_date   = false;
 
-	while ( have_posts() ) : the_post();
+	while ( have_posts() ) :
+
+		the_post();
 
 		global $post;
 
-		// If event has no corresponding row in events table then skip it
+		// If event has no corresponding row in events table then skip it.
 		if ( ! isset( $post->event_id ) || -1 == $post->event_id ) {
 			continue;
 		}
 
-		// Get basic data
+		// Get basic data.
 		$schedule_data = eo_get_event_schedule();
-		$created_date  = get_post_time( 'Ymd\THis\Z',true );
-		$modified_date = get_post_modified_time( 'Ymd\THis\Z',true );
+		$created_date  = get_post_time( 'Ymd\THis\Z', true );
+		$modified_date = get_post_modified_time( 'Ymd\THis\Z', true );
 
-		// Set defaults for start and end
+		// Set defaults for start and end.
 		$start = eo_get_the_start( DATETIMEOBJ, $post->ID, $post->occurrence_id );
 		$end = eo_get_the_end( DATETIMEOBJ, $post->ID, $post->occurrence_id );
 
@@ -53,25 +57,11 @@ if ( have_posts() ) :
 		$start = $schedule_data['start'];
 		$end = $schedule_data['end'];
 
-		// Modified recurrences need special handling
+		// Modified recurrences need special handling.
 		if ( ! empty( $schedule_data['exclude'] ) OR ! empty( $schedule_data['include'] ) ) :
 			$start = eo_get_the_start( DATETIMEOBJ, $post->ID, $post->occurrence_id );
 			$end = eo_get_the_end( DATETIMEOBJ, $post->ID, $post->occurrence_id );
 		endif;
-		*/
-
-		/*
-		$e = new Exception;
-		$trace = $e->getTraceAsString();
-		error_log( print_r( array(
-			'method' => __METHOD__,
-			//'post' => $post,
-			'post-title' => $post->post_title,
-			//'schedule_data' => $schedule_data,
-			//'start' => $start,
-			//'end' => $end,
-			//'backtrace' => $trace,
-		), true ) );
 		*/
 
 		if ( $timezone ) {
@@ -79,41 +69,41 @@ if ( have_posts() ) :
 			$latest_date   = $latest_date ? max( eo_get_schedule_last( DATETIMEOBJ ), $latest_date ) : eo_get_schedule_last( DATETIMEOBJ );
 		}
 
-		// Generate Event status
+		// Generate Event status.
 		if ( get_post_status( get_the_ID() ) == 'publish' ) {
-			$status = 'CONFIRMED';
+			$event_status = 'CONFIRMED';
 		} else {
-			$status = 'TENTATIVE';
+			$event_status = 'TENTATIVE';
 		}
 
-		// Init UID
+		// Init UID.
 		$uid = eo_get_event_uid();
 
-		// Maybe inject occurrence ID for a unique UID
+		// Maybe inject occurrence ID for a unique UID.
 		$oid = eo_get_the_occurrence_id();
-		if ( ! empty( $oid ) AND $oid > 0 ) :
+		if ( ! empty( $oid ) && $oid > 0 ) :
 			$uid .= 'OID-' . $oid;
 		endif;
 
-		// Output event
+		// Output event.
 		echo "BEGIN:VEVENT\r\n";
 		echo 'UID:' . $uid . "\r\n";
-		echo 'STATUS:' . $status . "\r\n";
+		echo 'STATUS:' . $event_status . "\r\n";
 		echo 'DTSTAMP:' . $dtstamp . "\r\n";
 		echo 'CREATED:' . $created_date . "\r\n";
 		echo 'LAST-MODIFIED:' . $modified_date . "\r\n";
 
 		if ( eo_is_all_day() ) {
-			// All day event
+			// All day event.
 			$end->modify( '+1 minute' );
 			echo 'DTSTART;VALUE=DATE:' . $start->format( 'Ymd' ) . "\r\n";
 			echo 'DTEND;VALUE=DATE:' . $end->format( 'Ymd' ) . "\r\n";
 		} elseif ( $timezone ) {
-			// Non-all-day event with timezone
+			// Non-all-day event with timezone.
 			echo 'DTSTART;TZID=' . eo_get_blog_timezone()->getName() . ':' . $start->format( 'Ymd\THis' ) . "\r\n";
 			echo 'DTEND;TZID=' . eo_get_blog_timezone()->getName() . ':' . $end->format( 'Ymd\THis' ) . "\r\n";
 		} else {
-			// Non-all-day event without timezone or with GMT offset
+			// Non-all-day event without timezone or with GMT offset.
 			$start->setTimezone( $utc_timezone );
 			$end->setTimezone( $utc_timezone );
 			echo 'DTSTART:' . $start->format( 'Ymd\THis\Z' ) . "\r\n";
@@ -121,7 +111,7 @@ if ( have_posts() ) :
 		}
 
 		/*
-		// This feed only supports recurrence without includes or excludes
+		// This feed only supports recurrence without includes or excludes.
 		if ( empty( $schedule_data['exclude'] ) AND empty( $schedule_data['include'] ) ) :
 			if ( $recurrence_rule = eventorganiser_generate_ics_rrule() ) :
 				echo 'RRULE:' . $recurrence_rule . "\r\n";
@@ -130,7 +120,7 @@ if ( have_posts() ) :
 		*/
 
 		/*
-		// This feed does not support exclusion
+		// This feed does not support exclusion.
 		if ( ! empty( $schedule_data['exclude'] ) ) :
 			$exclude_strings = array();
 			foreach ( $schedule_data['exclude'] as $exclude ) {
@@ -151,7 +141,7 @@ if ( have_posts() ) :
 		*/
 
 		/*
-		// This feed does not support inclusion
+		// This feed does not support inclusion.
 		if ( ! empty( $schedule_data['include'] ) ) :
 			$include_strings = array();
 			foreach ( $schedule_data['include'] as $include ) {
@@ -190,7 +180,8 @@ if ( have_posts() ) :
 		endif;
 
 		$description = wpautop( html_entity_decode( get_the_content(), ENT_COMPAT, 'UTF-8' ) );
-		$description = str_replace( "\r\n", '', $description ); //Remove new lines
+		// Remove new lines.
+		$description = str_replace( "\r\n", '', $description );
 		$description = str_replace( "\n", '', $description );
 		$description = eventorganiser_escape_ical_text( $description );
 		echo eventorganiser_fold_ical_text( "X-ALT-DESC;FMTTYPE=text/html: $description" ) . "\r\n";
@@ -209,16 +200,16 @@ if ( have_posts() ) :
 		endif;
 
 		if ( get_the_author_meta( 'ID' ) ) {
-			$author_name  = eventorganiser_escape_ical_text( get_the_author() );
+			$author_name = eventorganiser_escape_ical_text( get_the_author() );
 			// @see https://github.com/stephenharris/Event-Organiser/issues/362
 			$author_name  = str_replace( '"', '', $author_name );
 			$author_email = eventorganiser_escape_ical_text( get_the_author_meta( 'user_email' ) );
 			echo eventorganiser_fold_ical_text( 'ORGANIZER;CN="' . $author_name . '":MAILTO:' . $author_email ) . "\r\n";
 		}
 
-		// Maybe append occurrence ID for a unique GUID
+		// Maybe append occurrence ID for a unique GUID.
 		$guid = get_permalink();
-		if ( ! empty( $oid ) AND $oid > 0 ) :
+		if ( ! empty( $oid ) && $oid > 0 ) :
 			$guid = add_query_arg( 'oid', $oid, $guid );
 		endif;
 		echo eventorganiser_fold_ical_text( 'URL;VALUE=URI:' . $guid ) . "\r\n";

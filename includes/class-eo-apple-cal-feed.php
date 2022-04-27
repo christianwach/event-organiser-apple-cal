@@ -1,4 +1,16 @@
 <?php
+/**
+ * ICS Feed for Apple Calendar Class.
+ *
+ * Handles generating the ICS feed.
+ *
+ * @since 0.1
+ *
+ * @package Event_Organiser_Apple_Cal
+ */
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * ICS Feed for Apple Calendar Class.
@@ -18,8 +30,6 @@ class Event_Organiser_Apple_Cal_Feed {
 	 */
 	public $feed_name = 'eo-apple';
 
-
-
 	/**
 	 * Initialises this object.
 	 *
@@ -28,11 +38,9 @@ class Event_Organiser_Apple_Cal_Feed {
 	public function __construct() {
 
 		// Register hooks when plugin is loaded.
-		add_action( 'event_organiser_apple_cal_loaded', array( $this, 'register_hooks' ) );
+		add_action( 'event_organiser_apple_cal_loaded', [ $this, 'register_hooks' ] );
 
 	}
-
-
 
 	/**
 	 * Register hooks.
@@ -42,20 +50,18 @@ class Event_Organiser_Apple_Cal_Feed {
 	public function register_hooks() {
 
 		// Add a new feed.
-		add_action( 'init', array( $this, 'feed_register' ) );
+		add_action( 'init', [ $this, 'feed_register' ] );
 
 		// Filter the query later than Event Organiser.
-		add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ), 20 );
+		add_action( 'pre_get_posts', [ $this, 'pre_get_posts' ], 20 );
 
 		// Filter whether the query is an event query.
-		add_filter( 'eventorganiser_is_event_query', array( $this, 'is_event_query' ), 10, 3 );
+		add_filter( 'eventorganiser_is_event_query', [ $this, 'is_event_query' ], 10, 3 );
 
 		// Filter Event Organiser's template stack.
-		add_filter( 'eventorganiser_template_stack', array( $this, 'template_stack' ) );
+		add_filter( 'eventorganiser_template_stack', [ $this, 'template_stack' ] );
 
 	}
-
-
 
 	/**
 	 * Register a new feed.
@@ -72,7 +78,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		}
 
 		// Add our custom feed and its callback.
-		add_feed( $this->feed_name, array( $this, 'feed_export' ) );
+		add_feed( $this->feed_name, [ $this, 'feed_export' ] );
 
 		// Maybe flush rules.
 		if ( $flush ) {
@@ -80,8 +86,6 @@ class Event_Organiser_Apple_Cal_Feed {
 		}
 
 	}
-
-
 
 	/**
 	 * Export an ICS feed that is compatible with Apple Calendar.
@@ -101,7 +105,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		}
 
 		// Generate a sensible filename.
-		$filename = urlencode( 'event-organiser-apple-cal_' . date( 'Y-m-d' ) . '.ics' );
+		$filename = urlencode( 'event-organiser-apple-cal_' . gmdate( 'Y-m-d' ) . '.ics' );
 
 		// Collect output.
 		ob_start();
@@ -110,8 +114,8 @@ class Event_Organiser_Apple_Cal_Feed {
 		header( 'Content-Description: File Transfer' );
 		header( 'Content-Disposition: attachment; filename=' . $filename );
 		header( 'Content-type: text/calendar; charset=' . get_option( 'blog_charset' ) . ';' );
-		header( "Pragma: 0" );
-		header( "Expires: 0" );
+		header( 'Pragma: 0' );
+		header( 'Expires: 0' );
 
 		// We filter Event Organiser's stack function to include our file.
 		eo_locate_template( 'ical-apple.php', true, false );
@@ -123,8 +127,6 @@ class Event_Organiser_Apple_Cal_Feed {
 		exit();
 
 	}
-
-
 
 	/**
 	 * Filter the query.
@@ -143,7 +145,11 @@ class Event_Organiser_Apple_Cal_Feed {
 		// Set post type.
 		$query->set( 'post_type', 'event' );
 
-		// Posts per page for feeds bug: https://core.trac.wordpress.org/ticket/17853
+		/*
+		 * Handle posts per page for feeds bug.
+		 *
+		 * @see https://core.trac.wordpress.org/ticket/17853
+		 */
 		add_filter( 'post_limits', 'wp17853_eventorganiser_workaround' );
 		$query->set( 'posts_per_page', -1 );
 
@@ -153,8 +159,6 @@ class Event_Organiser_Apple_Cal_Feed {
 		}
 
 	}
-
-
 
 	/**
 	 * Filters whether the query is an event query.
@@ -174,7 +178,7 @@ class Event_Organiser_Apple_Cal_Feed {
 	public function is_event_query( $bool, $query, $exclusive ) {
 
 		// Test lifted from Event Organiser.
-		if ( ( $query AND $query->is_feed( $this->feed_name ) ) OR is_feed( $this->feed_name ) ) {
+		if ( ( $query && $query->is_feed( $this->feed_name ) ) || is_feed( $this->feed_name ) ) {
 			$bool = true;
 		}
 
@@ -182,8 +186,6 @@ class Event_Organiser_Apple_Cal_Feed {
 		return $bool;
 
 	}
-
-
 
 	/**
 	 * Filters the Event Organiser template stack.
@@ -206,7 +208,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		$templates_dir = EVENT_ORGANISER_APPLE_CAL_PATH . 'templates';
 
 		// Add it if not already present.
-		if ( is_array( $stack ) AND ! in_array( $templates_dir, $stack ) ) {
+		if ( is_array( $stack ) && ! in_array( $templates_dir, $stack ) ) {
 			$stack[] = $templates_dir;
 		}
 
@@ -215,9 +217,4 @@ class Event_Organiser_Apple_Cal_Feed {
 
 	}
 
-
-
-} // end class Event_Organiser_Apple_Cal_Feed
-
-
-
+}

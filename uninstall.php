@@ -1,20 +1,13 @@
-<?php /*
-================================================================================
-Event Organiser ICS Feed for Apple Calendar Uninstaller
-================================================================================
-AUTHOR: Christian Wach <needle@haystack.co.uk>
---------------------------------------------------------------------------------
-NOTES
-=====
+<?php
+/**
+ * Uninstaller.
+ *
+ * @since 0.1
+ *
+ * @package Event_Organiser_Apple_Cal
+ */
 
-
---------------------------------------------------------------------------------
-*/
-
-
-
-// kick out if uninstall not called from WordPress
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) exit();
-
-
-
+// Kick out if uninstall not called from WordPress.
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	exit();
+}

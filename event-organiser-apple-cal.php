@@ -1,17 +1,17 @@
-<?php /*
---------------------------------------------------------------------------------
-Plugin Name: Event Organiser ICS Feed for Apple Calendar
-Description: Provides a Feed for Event Organiser Events that is compatible with Apple Calendar.
-Version: 0.1
-Author: Christian Wach
-Author URI: http://haystack.co.uk
-Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
-Text Domain: event-organiser-apple-cal
-Domain Path: /languages
---------------------------------------------------------------------------------
-*/
-
-
+<?php
+/**
+ * Plugin Name: Event Organiser ICS Feed for Apple Calendar
+ * Description: Provides a Feed for Event Organiser Events that is compatible with Apple Calendar.
+ * Version: 0.1
+ * Author: Christian Wach
+ * Author URI: https://haystack.co.uk
+ * Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
+ * GitHub Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
+ * Text Domain: event-organiser-apple-cal
+ * Domain Path: /languages
+ *
+ * @package Event_Organiser_Apple_Cal
+ */
 
 // Set our version here.
 define( 'EVENT_ORGANISER_APPLE_CAL_VERSION', '0.1' );
@@ -29,8 +29,6 @@ if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_URL' ) ) {
 if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_PATH' ) ) {
 	define( 'EVENT_ORGANISER_APPLE_CAL_PATH', plugin_dir_path( EVENT_ORGANISER_APPLE_CAL_FILE ) );
 }
-
-
 
 /**
  * Event Organiser ICS Feed for Apple Calendar Class.
@@ -68,8 +66,6 @@ class Event_Organiser_Apple_Cal {
 	 */
 	public $shortcode;
 
-
-
 	/**
 	 * Return the instance and optionally create one if it doesn't already exist.
 	 *
@@ -83,7 +79,7 @@ class Event_Organiser_Apple_Cal {
 		if ( ! isset( self::$instance ) ) {
 
 			// Create it.
-			self::$instance = new Event_Organiser_Apple_Cal;
+			self::$instance = new Event_Organiser_Apple_Cal();
 			self::$instance->instance_setup();
 
 		}
@@ -93,8 +89,6 @@ class Event_Organiser_Apple_Cal {
 
 	}
 
-
-
 	/**
 	 * Sets up this object.
 	 *
@@ -103,14 +97,12 @@ class Event_Organiser_Apple_Cal {
 	public function instance_setup() {
 
 		// Always use translation files.
-		add_action( 'plugins_loaded', array( $this, 'enable_translation' ) );
+		add_action( 'plugins_loaded', [ $this, 'enable_translation' ] );
 
 		// Initialise.
-		add_action( 'plugins_loaded', array( $this, 'initialise' ) );
+		add_action( 'plugins_loaded', [ $this, 'initialise' ] );
 
 	}
-
-
 
 	/**
 	 * Perform tasks on plugin activation.
@@ -121,8 +113,6 @@ class Event_Organiser_Apple_Cal {
 		flush_rewrite_rules();
 	}
 
-
-
 	/**
 	 * Perform tasks on plugin deactivation.
 	 *
@@ -132,8 +122,6 @@ class Event_Organiser_Apple_Cal {
 		flush_rewrite_rules();
 	}
 
-
-
 	/**
 	 * Initialises this object.
 	 *
@@ -142,7 +130,9 @@ class Event_Organiser_Apple_Cal {
 	public function initialise() {
 
 		// Bail quietly if Event Organiser plugin is not present.
-		if ( ! defined( 'EVENT_ORGANISER_VER' ) ) return;
+		if ( ! defined( 'EVENT_ORGANISER_VER' ) ) {
+			return;
+		}
 
 		// Include files.
 		$this->include_files();
@@ -162,8 +152,6 @@ class Event_Organiser_Apple_Cal {
 
 	}
 
-
-
 	/**
 	 * Include files.
 	 *
@@ -171,15 +159,11 @@ class Event_Organiser_Apple_Cal {
 	 */
 	public function include_files() {
 
-		// Load our Apple iCal Feed class.
-		require( EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-feed.php' );
-
-		// Load our Shortcode class.
-		require( EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-shortcode.php' );
+		// Load our class files.
+		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-feed.php';
+		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-shortcode.php';
 
 	}
-
-
 
 	/**
 	 * Set up this plugin's objects.
@@ -190,32 +174,32 @@ class Event_Organiser_Apple_Cal {
 
 		// Only ever do this once.
 		static $done;
-		if ( isset( $done ) AND $done === true ) return;
+		if ( isset( $done ) && $done === true ) {
+			return;
+		}
 
-		// Instantiate Apple iCal Feed.
-		$this->ical = new Event_Organiser_Apple_Cal_Feed;
-
-		// Instantiate Shortcode.
-		$this->shortcode = new Event_Organiser_Apple_Cal_Shortcode;
+		// Instantiate objects.
+		$this->ical = new Event_Organiser_Apple_Cal_Feed();
+		$this->shortcode = new Event_Organiser_Apple_Cal_Shortcode();
 
 		// We're done.
 		$done = true;
 
 	}
 
-
-
 	/**
 	 * Load translation files.
 	 *
 	 * A good reference on how to implement translation in WordPress:
-	 * http://ottopress.com/2012/internationalization-youre-probably-doing-it-wrong/
+	 *
+	 * @see http://ottopress.com/2012/internationalization-youre-probably-doing-it-wrong/
 	 *
 	 * @since 0.1
 	 */
 	public function enable_translation() {
 
 		// Load translations.
+		// phpcs:ignore WordPress.WP.DeprecatedParameters.Load_plugin_textdomainParam2Found
 		load_plugin_textdomain(
 			'event-organiser-apple-cal', // Unique name.
 			false, // Deprecated argument.
@@ -224,11 +208,7 @@ class Event_Organiser_Apple_Cal {
 
 	}
 
-
-
-} // end class Event_Organiser_Apple_Cal
-
-
+}
 
 /**
  * Returns the Event_Organiser_Apple_Cal instance.
@@ -246,16 +226,11 @@ function event_organiser_apple_cal() {
 	return Event_Organiser_Apple_Cal::instance_get();
 }
 
-// Instantiate Event_Organiser_Apple_Cal immediately.
+// Boot Event_Organiser_Apple_Cal immediately.
 event_organiser_apple_cal();
 
+// Activation.
+register_activation_hook( __FILE__, [ event_organiser_apple_cal(), 'activate' ] );
 
-
-// activation
-register_activation_hook( __FILE__, array( event_organiser_apple_cal(), 'activate' ) );
-
-// deactivation
-register_deactivation_hook( __FILE__, array( event_organiser_apple_cal(), 'deactivate' ) );
-
-
-
+// Deactivation.
+register_deactivation_hook( __FILE__, [ event_organiser_apple_cal(), 'deactivate' ] );

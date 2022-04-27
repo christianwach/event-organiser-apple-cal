@@ -1,4 +1,16 @@
 <?php
+/**
+ * Shortcode for Apple Calendar Class.
+ *
+ * Handles the shortcode for linking to the ICS feed.
+ *
+ * @since 0.1
+ *
+ * @package Event_Organiser_Apple_Cal
+ */
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Shortcode for Apple Calendar Class.
@@ -18,8 +30,6 @@ class Event_Organiser_Apple_Cal_Shortcode {
 	 */
 	public $shortcode_name = 'eo_apple_subscribe';
 
-
-
 	/**
 	 * Initialises this object.
 	 *
@@ -28,11 +38,9 @@ class Event_Organiser_Apple_Cal_Shortcode {
 	public function __construct() {
 
 		// Register hooks when plugin is loaded.
-		add_action( 'event_organiser_apple_cal_loaded', array( $this, 'register_hooks' ) );
+		add_action( 'event_organiser_apple_cal_loaded', [ $this, 'register_hooks' ] );
 
 	}
-
-
 
 	/**
 	 * Register hooks.
@@ -42,11 +50,9 @@ class Event_Organiser_Apple_Cal_Shortcode {
 	public function register_hooks() {
 
 		// Register shortcode.
-		add_action( 'init', array( $this, 'shortcode_register' ) );
+		add_action( 'init', [ $this, 'shortcode_register' ] );
 
 	}
-
-
 
 	/**
 	 * Register our shortcode.
@@ -55,12 +61,10 @@ class Event_Organiser_Apple_Cal_Shortcode {
 	 */
 	public function shortcode_register() {
 
-		// create Data Summary shortcode
-		add_shortcode( $this->shortcode_name, array( $this, 'shortcode_render' ) );
+		// Create Data Summary shortcode.
+		add_shortcode( $this->shortcode_name, [ $this, 'shortcode_render' ] );
 
 	}
-
-
 
 	/**
 	 * Add Data Summary to a page/post via a shortcode.
@@ -82,12 +86,12 @@ class Event_Organiser_Apple_Cal_Shortcode {
 		}
 
 		// Parse attributes.
-		$data = shortcode_atts( array(
+		$data = shortcode_atts( [
 			'title' => __( 'Subscribe in Apple Calendar', 'event-organiser-apple-cal' ),
 			'class' => '',
 			'id' => '',
 			'style' => '',
-		), $atts, $this->shortcode_name );
+		], $atts, $this->shortcode_name );
 
 		// Get reference to plugin.
 		$plugin = event_organiser_apple_cal();
@@ -112,9 +116,4 @@ class Event_Organiser_Apple_Cal_Shortcode {
 
 	}
 
-
-
-} // end class Event_Organiser_Apple_Cal_Shortcode
-
-
-
+}
