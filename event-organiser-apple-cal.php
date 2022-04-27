@@ -13,6 +13,9 @@
  * @package Event_Organiser_Apple_Cal
  */
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
+
 // Set our version here.
 define( 'EVENT_ORGANISER_APPLE_CAL_VERSION', '0.1' );
 
