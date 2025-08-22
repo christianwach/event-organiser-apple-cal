@@ -7,7 +7,5 @@
  * @package Event_Organiser_Apple_Cal
  */
 
-// Kick out if uninstall not called from WordPress.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	exit();
-}
+// Bail if uninstall not called from WordPress.
+defined( 'WP_UNINSTALL_PLUGIN' ) || exit;

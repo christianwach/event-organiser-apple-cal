@@ -1,14 +1,16 @@
 <?php
 /**
- * Plugin Name: Event Organiser ICS Feed for Apple Calendar
- * Description: Provides a Feed for Event Organiser Events that is compatible with Apple Calendar.
- * Version: 0.1.1
- * Author: Christian Wach
- * Author URI: https://haystack.co.uk
- * Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
+ * Event Organiser ICS Feed for Apple Calendar
+ *
+ * Plugin Name:       Event Organiser ICS Feed for Apple Calendar
+ * Description:       Provides a Feed for Event Organiser Events that is compatible with Apple Calendar.
+ * Version:           0.1.1
+ * Plugin URI:        https://github.com/christianwach/event-organiser-apple-cal
  * GitHub Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
- * Text Domain: event-organiser-apple-cal
- * Domain Path: /languages
+ * Author:            Christian Wach
+ * Author URI:        https://haystack.co.uk
+ * Text Domain:       event-organiser-apple-cal
+ * Domain Path:       /languages
  *
  * @package Event_Organiser_Apple_Cal
  */
@@ -28,6 +30,7 @@ if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_FILE' ) ) {
 if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_URL' ) ) {
 	define( 'EVENT_ORGANISER_APPLE_CAL_URL', plugin_dir_url( EVENT_ORGANISER_APPLE_CAL_FILE ) );
 }
+
 // Store PATH to this plugin's directory.
 if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_PATH' ) ) {
 	define( 'EVENT_ORGANISER_APPLE_CAL_PATH', plugin_dir_path( EVENT_ORGANISER_APPLE_CAL_FILE ) );
@@ -56,7 +59,7 @@ class Event_Organiser_Apple_Cal {
 	 *
 	 * @since 0.1
 	 * @access public
-	 * @var object $ical The Apple iCal Feed class.
+	 * @var Event_Organiser_Apple_Cal_Feed
 	 */
 	public $ical;
 
@@ -65,7 +68,7 @@ class Event_Organiser_Apple_Cal {
 	 *
 	 * @since 0.1
 	 * @access public
-	 * @var object $ical The Shortcode class.
+	 * @var Event_Organiser_Apple_Cal_Shortcode
 	 */
 	public $shortcode;
 
@@ -97,13 +100,76 @@ class Event_Organiser_Apple_Cal {
 	 *
 	 * @since 0.1
 	 */
-	public function instance_setup() {
+	private function instance_setup() {
 
 		// Always use translation files.
-		add_action( 'plugins_loaded', [ $this, 'enable_translation' ] );
+		add_action( 'init', [ $this, 'enable_translation' ] );
 
 		// Initialise.
 		add_action( 'plugins_loaded', [ $this, 'initialise' ] );
+
+	}
+
+	/**
+	 * Initialises this object.
+	 *
+	 * @since 0.1
+	 */
+	public function initialise() {
+
+		// Bail quietly if Event Organiser plugin is not present.
+		if ( ! defined( 'EVENT_ORGANISER_VER' ) ) {
+			return;
+		}
+
+		// Only ever do this once.
+		static $done;
+		if ( isset( $done ) && true === $done ) {
+			return;
+		}
+
+		// Bootstrap plugin.
+		$this->include_files();
+		$this->setup_objects();
+
+		/**
+		 * Broadcast that this plugin is now loaded.
+		 *
+		 * This action is used internally by this plugin to initialise its objects
+		 * and ensures that all includes and setup has occurred beforehand.
+		 *
+		 * @since 0.1
+		 */
+		do_action( 'event_organiser_apple_cal_loaded' );
+
+		// We're done.
+		$done = true;
+
+	}
+
+	/**
+	 * Include files.
+	 *
+	 * @since 0.1
+	 */
+	private function include_files() {
+
+		// Load our class files.
+		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-feed.php';
+		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-shortcode.php';
+
+	}
+
+	/**
+	 * Set up this plugin's objects.
+	 *
+	 * @since 0.1
+	 */
+	private function setup_objects() {
+
+		// Instantiate objects.
+		$this->ical      = new Event_Organiser_Apple_Cal_Feed();
+		$this->shortcode = new Event_Organiser_Apple_Cal_Shortcode();
 
 	}
 
@@ -123,71 +189,6 @@ class Event_Organiser_Apple_Cal {
 	 */
 	public function deactivate() {
 		flush_rewrite_rules();
-	}
-
-	/**
-	 * Initialises this object.
-	 *
-	 * @since 0.1
-	 */
-	public function initialise() {
-
-		// Bail quietly if Event Organiser plugin is not present.
-		if ( ! defined( 'EVENT_ORGANISER_VER' ) ) {
-			return;
-		}
-
-		// Include files.
-		$this->include_files();
-
-		// Set up objects and references.
-		$this->setup_objects();
-
-		/**
-		 * Broadcast that this plugin is now loaded.
-		 *
-		 * This action is used internally by this plugin to initialise its objects
-		 * and ensures that all includes and setup has occurred beforehand.
-		 *
-		 * @since 0.1
-		 */
-		do_action( 'event_organiser_apple_cal_loaded' );
-
-	}
-
-	/**
-	 * Include files.
-	 *
-	 * @since 0.1
-	 */
-	public function include_files() {
-
-		// Load our class files.
-		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-feed.php';
-		require EVENT_ORGANISER_APPLE_CAL_PATH . 'includes/class-eo-apple-cal-shortcode.php';
-
-	}
-
-	/**
-	 * Set up this plugin's objects.
-	 *
-	 * @since 0.1
-	 */
-	public function setup_objects() {
-
-		// Only ever do this once.
-		static $done;
-		if ( isset( $done ) && $done === true ) {
-			return;
-		}
-
-		// Instantiate objects.
-		$this->ical = new Event_Organiser_Apple_Cal_Feed();
-		$this->shortcode = new Event_Organiser_Apple_Cal_Shortcode();
-
-		// We're done.
-		$done = true;
-
 	}
 
 	/**

@@ -26,7 +26,7 @@ class Event_Organiser_Apple_Cal_Feed {
 	 *
 	 * @since 0.1
 	 * @access public
-	 * @var str $feed_name The name of the feed.
+	 * @var string
 	 */
 	public $feed_name = 'eo-apple';
 
@@ -105,7 +105,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		}
 
 		// Generate a sensible filename.
-		$filename = urlencode( 'event-organiser-apple-cal_' . gmdate( 'Y-m-d' ) . '.ics' );
+		$filename = rawurlencode( 'event-organiser-apple-cal_' . gmdate( 'Y-m-d' ) . '.ics' );
 
 		// Collect output.
 		ob_start();
@@ -123,6 +123,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		// Collect output and echo.
 		$eventsical = ob_get_contents();
 		ob_end_clean();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $eventsical;
 		exit();
 
@@ -170,9 +171,9 @@ class Event_Organiser_Apple_Cal_Feed {
 	 *
 	 * @since 0.1
 	 *
-	 * @param bool $bool True if the query is an event query.
+	 * @param bool     $bool True if the query is an event query.
 	 * @param WP_Query $query The WP_Query instance to check.
-	 * @param bool $exclusive Whether the check if for queries exclusively for events.
+	 * @param bool     $exclusive Whether the check if for queries exclusively for events.
 	 * @return bool $bool True if the query is an event query.
 	 */
 	public function is_event_query( $bool, $query, $exclusive ) {
@@ -208,7 +209,7 @@ class Event_Organiser_Apple_Cal_Feed {
 		$templates_dir = EVENT_ORGANISER_APPLE_CAL_PATH . 'templates';
 
 		// Add it if not already present.
-		if ( is_array( $stack ) && ! in_array( $templates_dir, $stack ) ) {
+		if ( is_array( $stack ) && ! in_array( $templates_dir, $stack, true ) ) {
 			$stack[] = $templates_dir;
 		}
 
