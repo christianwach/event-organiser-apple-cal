@@ -4,7 +4,7 @@
  *
  * Plugin Name:       Event Organiser ICS Feed for Apple Calendar
  * Description:       Provides a Feed for Event Organiser Events that is compatible with Apple Calendar.
- * Version:           0.1.1
+ * Version:           1.0.0a
  * Plugin URI:        https://github.com/christianwach/event-organiser-apple-cal
  * GitHub Plugin URI: https://github.com/christianwach/event-organiser-apple-cal
  * Author:            Christian Wach
@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Set our version here.
-define( 'EVENT_ORGANISER_APPLE_CAL_VERSION', '0.1.1' );
+define( 'EVENT_ORGANISER_APPLE_CAL_VERSION', '1.0.0a' );
 
 // Store reference to this file.
 if ( ! defined( 'EVENT_ORGANISER_APPLE_CAL_FILE' ) ) {
